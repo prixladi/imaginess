@@ -1,0 +1,52 @@
+service: imaginess
+
+frameworkVersion: '2'
+
+useDotenv: true
+
+provider:
+  name: azure
+  region: westeurope
+  runtime: nodejs12
+  environment:
+    COSMOS_ENDPOINT: ${env:COSMOS_ENDPOINT}
+    COSMOS_KEY: ${env:COSMOS_KEY}
+
+plugins: # look for additional plugins in the community plugins repo: https://github.com/serverless/plugins
+  - serverless-azure-functions
+
+package:
+  exclude:
+    - .vscode/**
+    - src/**
+    - local.settings.json
+    - serverless.template.yml
+    - README.md
+    - .prettierignore
+    - .prettierrc
+    - .eslintrc.json
+
+functions:
+  hello:
+    handler: dist/handlers/hello.sayHello
+    events:
+      - http: true
+        methods:
+          - GET
+        authLevel: anonymous
+
+  createImage:
+    handler: dist/handlers/image.create
+    events:
+      - http: true
+        methods:
+          - POST
+        authLevel: anonymous
+
+  getImage:
+    handler: dist/handlers/image.get
+    events:
+      - http: true
+        methods:
+          - GET
+        authLevel: anonymous
