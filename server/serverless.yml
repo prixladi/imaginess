@@ -11,6 +11,7 @@ provider:
   environment:
     COSMOS_ENDPOINT: ${env:COSMOS_ENDPOINT}
     COSMOS_KEY: ${env:COSMOS_KEY}
+    BLOB_STORAGE_CONNECTION_STRING: ${env:BLOB_STORAGE_CONNECTION_STRING}
 
 plugins: # look for additional plugins in the community plugins repo: https://github.com/serverless/plugins
   - serverless-azure-functions
@@ -35,16 +36,24 @@ functions:
           - GET
         authLevel: anonymous
 
-  createImage:
-    handler: dist/handlers/image.create
+  createBlob:
+    handler: dist/handlers/createBlob
     events:
       - http: true
         methods:
           - POST
         authLevel: anonymous
 
-  getImage:
-    handler: dist/handlers/image.get
+  createImage:
+    handler: dist/handlers/createImage
+    events:
+      - http: true
+        methods:
+          - POST
+        authLevel: anonymous
+
+  getRandomImage:
+    handler: dist/handlers/getRandomImage
     events:
       - http: true
         methods:
