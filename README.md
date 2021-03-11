@@ -1,6 +1,6 @@
 # Imaginess
 
-Basic image sharing app build with serverless framework using azure blob storage and cosmosdb.
+Basic image sharing app built with serverless framework using azure blob storage and cosmosdb.
 
 ## Images from app
 
