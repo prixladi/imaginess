@@ -1,6 +1,6 @@
 <template>
   <section>
-    <b-button label="Upload image" icon-left="image" type="is-primary" size="is-medium" @click="isModalOpen = true" />
+    <ImageButton label="Upload image" @click="isModalOpen = true" />
     <b-modal
       v-model="isModalOpen"
       has-modal-card
@@ -17,29 +17,13 @@
         </header>
         <div class="modal-card-body">
           <b-field v-if="!fileData">
-            <b-upload accept="image/jpeg" v-model="file" drag-drop expanded>
-              <section class="section">
-                <div class="content has-text-centered">
-                  <p>
-                    <b-icon icon="upload" size="is-large"></b-icon>
-                  </p>
-                  <p>Drop your files here or click to upload</p>
-                </div>
-              </section>
-            </b-upload>
+            <UploadSection v-model="file" />
           </b-field>
           <b-image class="image" v-else :src="fileData" />
         </div>
         <footer v-if="!!fileData" class="modal-card-footer">
           <p class="modal-card-title">Login</p>
-          <b-button
-            label="Upload"
-            icon-left="image"
-            type="is-primary"
-            size="is-medium"
-            @click="upload"
-            :loading="loading"
-          />
+          <ImageButton label="Upload" @click="upload" :loading="loading" />
         </footer>
       </div>
     </b-modal>
@@ -48,9 +32,12 @@
 
 <script>
 import { createBlob, uploadFile, createImage } from '../requests';
+import UploadSection from './UploadSection';
+import ImageButton from './ImageButton';
 
 export default {
-  name: 'HelloWorld',
+  name: 'UploadModal',
+  components: { UploadSection, ImageButton },
   data: () => ({ isModalOpen: false, file: null, fileData: null, loading: false }),
   watch: {
     file: function() {
