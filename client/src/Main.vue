@@ -23,6 +23,7 @@
 
 <script>
 import UploadModal from './components/UploadModal.vue';
+import { getRandomImage } from './requests';
 
 export default {
   name: 'Main',
@@ -34,12 +35,7 @@ export default {
     async fetchRandomImage() {
       this.loading = true;
       try {
-        const result = await fetch('https://sls-weur-dev-imaginess.azurewebsites.net/api/getRandomImage');
-        if (result.status >= 400) {
-          throw new Error(`Unable to reatrieve image, status: '${result.status}'.`);
-        }
-
-        this.image = await result.json();
+        this.image = await getRandomImage();
       } finally {
         this.loading = false;
       }

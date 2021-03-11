@@ -1,13 +1,6 @@
 <template>
   <section>
-    <b-button
-      label="Upload image"
-      icon-left="image"
-      type="is-primary"
-      size="is-medium"
-      @click="isModalOpen = true"
-    />
-
+    <b-button label="Upload image" icon-left="image" type="is-primary" size="is-medium" @click="isModalOpen = true" />
     <b-modal
       v-model="isModalOpen"
       has-modal-card
@@ -54,7 +47,7 @@
 </template>
 
 <script>
-import { BlockBlobClient } from '@azure/storage-blob';
+import { createBlob, uploadFile, createImage } from '../requests';
 
 export default {
   name: 'HelloWorld',
@@ -78,39 +71,14 @@ export default {
     async upload() {
       this.loading = true;
       try {
-        const blobResult = await fetch(
-          `https://sls-weur-dev-imaginess.azurewebsites.net/api/createBlob`,
-          {
-            method: 'POST',
-            body: JSON.stringify({ fileName: this.file.name }),
-          }
-        );
-
-        const blob = await blobResult.json();
-
-        const client = new BlockBlobClient(blob.writeUrl);
-        const matches = this.fileData.match(/^data:(.+);base64,(.+)$/);
-        const buffer = Buffer.from(matches[2], 'base64');
-        var uploadResult = await client.uploadData(buffer, { blobHTTPHeaders: { blobContentType: matches[1] } });
-        if (!uploadResult._response.status >= 400) {
-          throw new Error(`Unexpected upload status '${uploadResult._response.status}'`);
-        }
+        const blob = await createBlob(this.file.name);
+        await uploadFile({ writeUrl: blob.writeUrl, fileData: this.fileData });
+        await createImage({ imageUrl: blob.readUrl, imageName: this.file.name });
 
         this.$buefy.toast.open({
           message: 'Image uploaded!',
           type: 'is-success',
         });
-
-        const result = await fetch(`https://sls-weur-dev-imaginess.azurewebsites.net/api/createImage`, {
-          method: 'POST',
-          body: JSON.stringify({ imageName: this.file.name, imageUrl: blob.readUrl }),
-        });
-
-        if(result.status >= 400) {
-          throw new Error(`Unable to create image status: '${result.status}'`);
-        }
-
-        this.isModalOpen = false;
       } catch (err) {
         this.$buefy.toast.open({
           message: 'Unable to upload image!',
@@ -119,6 +87,7 @@ export default {
         throw err;
       } finally {
         this.loading = false;
+        this.isModalOpen = false;
       }
     },
   },
