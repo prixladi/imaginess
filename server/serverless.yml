@@ -28,14 +28,6 @@ package:
     - .eslintrc.json
 
 functions:
-  hello:
-    handler: dist/handlers/hello.sayHello
-    events:
-      - http: true
-        methods:
-          - GET
-        authLevel: anonymous
-
   createBlob:
     handler: dist/handlers/createBlob
     events:
